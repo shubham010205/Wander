@@ -1,0 +1,7 @@
+{% extends "layout.html" %}
+{% block content %}
+    <img src="{{ image }}" class="img-thumbnail rounded-circle account-img" alt="...">
+    <b>{{ current_user.username }}</b>
+    <a href="{{ url_for('users.update') }}">Update Info</a><br>
+    <a href="{{ url_for('users.profile', user_id=current_user.id) }}">Go to Profile</a>
+{% endblock content %}
