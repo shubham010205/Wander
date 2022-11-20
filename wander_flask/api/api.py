@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify, request
 from flask.views import MethodView
 from flask_jwt_extended import jwt_required, create_access_token
-from wander_flask import db
+from wander_flask import db, bcrypt
 from wander_flask.models import (User, user_schema, users_schema,
-                                    Blog, post_schema, posts_schema)
+                                    Blog, posts_schema)
 
 
 api = Blueprint("api", __name__)
@@ -32,11 +32,12 @@ class Users(MethodView):
             if user1 or user2:
                 return jsonify(message= "These user details already exist."), 401
             else:
+                hashed_password = bcrypt.generate_password_hash(request.form.get("password")).decode("utf-8")
                 user = User(first_name= request.form.get("first_name"),
                                 last_name= request.form.get("last_name"),
                                 username= username,
                                 email= email,
-                                password= request.form.get("password")
+                                password= hashed_password
                                 )
                 db.session.add(user)
                 db.session.commit()
@@ -67,8 +68,8 @@ class Users(MethodView):
             return jsonify(message= "Please enter the details to update a user.",
                             keys= "first_name, last_name, username, email, password"), 400
 
-    
-    @jwt_required
+
+    # @jwt_required
     def delete(self):
         email = request.form.get("email")
         user = User.query.filter_by(email=email).first()
@@ -81,7 +82,7 @@ class Users(MethodView):
 
 
 view_function = Users.as_view("users_api")
-api.add_url_rule("/api/users", methods= ["GET", "POST", "PUT", "DELETE"],
+api.add_url_rule("/api/users", methods= ["GET", "POST"],
                             view_func= view_function)
 
 

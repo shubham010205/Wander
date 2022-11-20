@@ -8,7 +8,7 @@ main = Blueprint("main",__name__)
 @main.route("/home")
 def home():
     posts = Blog.query.all()
-    return render_template("home.html", title="Home Page", posts=posts)
+    return render_template("home.html", posts=posts)
 
 @main.route("/about")
 def about():
