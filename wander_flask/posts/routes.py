@@ -25,7 +25,7 @@ def create_post():
 def post(post_id):
     get_post = Blog.query.get_or_404(post_id)
     if get_post.image:
-        post_image = url_for('static', filename='/profile_pics/'+post.image)
+        post_image = url_for('static', filename='/profile_pics/' + get_post.image)
     else:
         post_image = None
     return render_template("post.html", post=get_post, title=get_post.title, image=post_image)
