@@ -25,7 +25,7 @@ def send_password_reset_mail(email,token):
     msg = Message("WanderBlog Password Reset",
                     sender="admin@WanderBlog.com",
                     recipients=[email])
-    msg.body = f"Hello {email}. To reset your password please follow the link: \
-https://localhost:5000/update_password?token={token}"
+    msg.body = (f"Hello {email}. To reset your password please follow the link:\n"
+                    f"https://localhost:5000/update_password?token={token}")
     mail.send(msg)
     return True

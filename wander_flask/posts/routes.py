@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, url_for, redirect, flash, request
 from flask_login import login_required, current_user
 from wander_flask import db
 from wander_flask.models import Blog
-from wander_flask.main.utils import save_image
+from wander_flask.posts.utils import save_image
 from wander_flask.posts.forms import CreatePostForm
 
 

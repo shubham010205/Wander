@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from flask.views import MethodView
-from flask_jwt_extended import jwt_required, create_access_token
+from flask_jwt_extended import create_access_token, verify_jwt_in_request
 from wander_flask import db, bcrypt
 from wander_flask.models import (User, user_schema, users_schema,
                                     Blog, posts_schema)
@@ -46,21 +46,27 @@ class Users(MethodView):
             return jsonify(message= "Please enter the details to create a user.",
                             keys= "first_name, last_name, username, email, password"), 400
 
-    # @jwt_required
+
     def put(self):
+        verify_jwt_in_request()
         email = request.form.get("email")
         if email:
             user = User.query.filter_by(email=email).first()
             if user:
-                user.first_name = request.form.get("first_name"),
-                user.last_name= request.form.get("last_name"),
-                user.username= request.form.get("username"),
-                user.email= email,
-                user.password= request.form.get("password")
+                if request.form.get("first_name"):
+                    user.first_name = request.form.get("first_name")
+                if request.form.get("last_name"):
+                    user.last_name= request.form.get("last_name")
+                if request.form.get("username"):
+                    user.username= request.form.get("username")
+                if request.form.get("password"):
+                    hashed_password = bcrypt.generate_password_hash(request.form.get("password")).decode("utf-8")
+                    user.password= hashed_password
                 
                 db.session.commit()
 
                 return jsonify(message= "User details have got updated successfully!")
+            
             else:
                 return jsonify(message= "The email does not belongs to a user's account!"), 404
 
@@ -69,8 +75,9 @@ class Users(MethodView):
                             keys= "first_name, last_name, username, email, password"), 400
 
 
-    # @jwt_required
+
     def delete(self):
+        verify_jwt_in_request()
         email = request.form.get("email")
         user = User.query.filter_by(email=email).first()
         if user:
@@ -81,9 +88,8 @@ class Users(MethodView):
             return jsonify(message= "The email does not belongs to a user's account!"), 400
 
 
-view_function = Users.as_view("users_api")
-api.add_url_rule("/api/users", methods= ["GET", "POST"],
-                            view_func= view_function)
+
+api.add_url_rule("/api/users", view_func= Users.as_view("users_api"))
 
 
 @api.route("/api/users/login", methods=["POST"])
@@ -113,5 +119,5 @@ class Posts(MethodView):
             data = posts_schema.dump(posts)
             return jsonify(data= data)
 
-view_funcs = Posts.as_view("posts_api")
-api.add_url_rule("/api/posts", methods= ["GET"], view_func= view_funcs)
+
+api.add_url_rule("/api/posts", view_func= Posts.as_view("posts_api"))

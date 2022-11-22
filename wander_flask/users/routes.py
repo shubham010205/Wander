@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, redirect, request, url_for, flash
 from flask_login import login_required, current_user, logout_user, login_user
 from wander_flask import db, bcrypt
 from wander_flask.models import User, Blog
-from wander_flask.main.utils import save_image, send_password_reset_mail
+from wander_flask.users.utils import save_image, send_password_reset_mail
 from wander_flask.users.forms import (RegistrationForm, LoginForm,
                                         AccountUpdateForm, ResetPasswordForm)
 
